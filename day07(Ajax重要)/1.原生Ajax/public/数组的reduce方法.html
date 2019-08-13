@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>数组的reduce方法</title>
+</head>
+<body>
+
+<script>
+  /*
+  * 【数组的reduce方法】：
+  *   1.reduce方法接收一个函数作为累加器（“连续操作器”）。
+  *   2.数组中的每个值（从左到右）开始合并（不一定是相加！），最终为一个值。
+  *   3.reduce为数组中的每一个元素【依次执行】回调函数，但不包括数组中被删除或从未被赋值的元素。
+  *   4.reduce方法最终返回的是最后一次调用累加器的结果。
+  *   5.累加器函数接受四个参数：preValue, nowValue, nowIndex, arr
+  *       --preValue：
+  *             --第一次调用时是初始值，如果初始值没有指定，就是数组中第一个元素的值，同时nowValue变为数组中的第二个值。
+  *             --以后调用时是上一次该回调函数的返回值；
+  *       --nowValue：当前元素值；
+  *       --nowIndex：当前索引；
+  *       --arr：调用 reduce 的数组；
+  *
+  * 参数说明：
+  *   array.reduce(function(preValue, nowValue, nowIndex, arr){}, initialValue)
+  *
+  * 注意：
+  *     1.如果initialValue在调用时被提供，那么第一次的preValue就等于initialValue，nowValue等于数组中的第一个值；
+  *     2.如果initialValue未被提供，那么preValue等于数组中的第一个值，nowValue自动等于数组中的第二个值。
+  *
+  * */
+  
+  let arr = [2,4,6,8]
+  
+  let result = arr.reduce(function (preValue, nowValue, nowIndex, arr) {
+    return preValue + nowValue
+  },100)
+  console.log(result);
+
+
+</script>
+</body>
+</html>

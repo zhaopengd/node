@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<script type="text/javascript" src="./jquery-1.12.4.js"></script>
+省：<select name="" id="province">
+  <option value="">请选择省份</option>
+</select>
+
+市：<select name="" id="city">
+  <option value="">请选择市</option>
+</select>
+
+
+区/县：<select name="" id="county">
+  <option value="">请选择区/县</option>
+</select>
+
+<script type="text/javascript">
+  
+  $(function () {
+    
+    let $province = $('#province')
+    let $city = $('#city')
+    let $county = $('#county')
+    
+    
+    //初始化中国所有省份信息
+    $.get('http://localhost:3000/getAllProvinces',(result)=>{
+      const {state,data} = result
+      if(state === 1){
+        let html = ''
+        data.forEach((item)=>{
+          html += `<option value="${item.province}">${item.name}</option>`
+        })
+        $province.append(html)
+      }else{
+        alert(result.err)
+      }
+    })
+    
+    //根据省份编码获取该省下的所有市
+    $province.change(function () {
+      let province = this.value
+      $city.html('<option value="">请选择市</option>')
+      $county.html('<option value="">请选择区/县</option>')
+      if(!province){
+        return
+      }
+      $.get('http://localhost:3000/getCityByProCode',{province},(result)=>{
+        const {state,data} = result
+          if(state === 1){
+            let html = data.map((item)=>{
+              return `<option value="${item.city}">${item.name}</option>`
+            })
+            $city.append(html)
+          }else{
+            alert(result.err)
+          }
+      })
+    })
+    
+    //根据省份编码和市编码获取区县信息
+    $city.change(function () {
+      let province = $province.val()
+      let city = this.value
+      $county.html('<option value="">请选择区/县</option>')
+      if(!city){
+        return
+      }
+      $.get('http://localhost:3000/getCountyByProCodeAndCitCode',{province,city},(result)=>{
+        const {state,data} = result
+        if(state === 1){
+          let html = data.map((item)=>{
+            return `<option value="${item.code}">${item.name}</option>`
+          })
+          $county.append(html)
+        }else{
+          alert(result.err)
+        }
+      })
+    })
+    
+    $county.change(()=>{
+       alert($county.val())
+    })
+  })
+  
+</script>
+
+</body>
+</html>

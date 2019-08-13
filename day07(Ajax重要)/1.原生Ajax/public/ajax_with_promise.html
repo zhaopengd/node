@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>使用Promise封装原生Ajax</title>
+</head>
+<body>
+<h2>该页面使用Promise封装了原生Ajax</h2>
+<button id="btn1">点我是我使用自己封装的方法发送GET请求</button>
+<button id="btn2">点我是我使用自己封装的方法发送POST请求</button>
+
+<script type="text/javascript">
+  
+  let btn1 = document.getElementById('btn1')
+  let btn2 = document.getElementById('btn2')
+  
+  btn1.onclick = function () {
+    sendAjax('http://localhost:3000/test_get','GET',{m:1,n:2}).then((data)=>{
+      console.log(data)
+    }).catch((err)=>{
+      console.log(err)
+    })
+  }
+  btn2.onclick = function () {
+    sendAjax('http://localhost:3000/test_post','POST',{m:3,n:4}).then((data)=>{
+      console.log(data)
+    }).catch((err)=>{
+      console.log(err)
+    })
+  }
+  
+  /*;(async()=>{
+    let {data} = await sendAjax('http://localhost:3000/test_get','GET',{m:1,n:2})
+    let {data2} = await sendAjax('http://localhost:3000/test_get','GET',{data})
+    let {data3} = await sendAjax('http://localhost:3000/test_get','GET',{data2})
+  })()*/
+  
+  function sendAjax(url,method,data) {
+    return new Promise((resolve,reject)=>{
+      //1.创建xhr对象
+      let xhr = new XMLHttpRequest()
+      //2.绑定监听
+      xhr.onreadystatechange = function () {
+        if(xhr.readyState !== 4){
+          return
+        }
+        if(xhr.readyState === 4 && (xhr.status >= 200 && xhr.status<= 299)){
+            const responseObj = {
+              data:xhr.response,
+              status:xhr.status,
+              statusText:xhr.statusText
+            }
+            resolve(responseObj)
+        }else{
+            reject(new Error('请求出错了'))
+        }
+      }
+      //3.设置请求的方式，地址，携带的参数
+      let dataKeys = Object.keys(data)
+      //4.将传递过来的数据对象加工成urlencoded形式的编码
+      let str = dataKeys.reduce(function (pre,now) {
+        return pre+=`${now}=${data[now]}&`
+      },'')
+      //5.发送请求
+      if(method.toLowerCase() === 'get'){
+        url += `?${str}`
+        xhr.open(method,url)
+        xhr.send()
+      }else if (method.toLowerCase() === 'post'){
+        xhr.open(method,url)
+        xhr.setRequestHeader('content-type','application/x-www-form-urlencoded')
+        xhr.send(str)
+      }
+    })
+  }
+  
+</script>
+
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>jsonp解决跨域</title>
+</head>
+<body>
+<button id="btn">点我获取数据</button>
+<script src="./jquery-1.12.4.js"></script>
+
+<script type="text/javascript">
+  /*
+  * 关于jsonp解决跨域的说明：
+  *   1.原理：利用了标签发送GET请求“天然跨域”（不受同源策略的限制）
+  *   2.套路：
+  *       --创建script节点，指定src，利用标签把请求发出去
+  *       --定义好一个处理数据的函数
+  *       --把数据处理函数的名称传递给后端
+  *       --后端返回符合js函数调用语法的字符串
+  *   3.局限性：
+  *       1.只能解决GET请求跨域问题
+  *       2.必须需要后端人员配合
+  * */
+  
+  let btn = document.getElementById('btn')
+  btn.onclick = function () {
+    
+    //自己实现jsonp解决跨域
+    //1.动态创建script节点
+    /*let scriptNode = document.createElement('script')
+    //2.定义一个接收数据的函数
+    window.getData = function (data) {
+      console.log(data)
+    }
+    //3.利用标签把请求发出去
+    scriptNode.src = 'http://localhost:3000/test_get?callback=getData'
+    //4.将标签放入页面，目的是把请求发出去
+    document.body.appendChild(scriptNode)*/
+    
+    //使用jQuery封装的jsonp(标准)
+    $.ajax('http://localhost:3000/test_get',{
+      method:'GET',
+      dataType:'jsonp',
+      data:{m:1,n:2},
+      success:function (data) {
+        console.log(data)
+      },
+      error:function (err) {
+        console.log(err)
+      }
+    })
+
+    //使用jQuery封装的jsonp(简写)
+    $.getJSON('http://localhost:3000/test_get?callback=?',{m:3,n:4},(data)=>{
+        console.log(data)
+    })
+    
+    
+  }
+  
+</script>
+
+</body>
+</html>
